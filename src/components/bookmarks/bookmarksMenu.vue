@@ -1,47 +1,65 @@
 <template>
   <transition name="modal">
     <div class="menu">
-      <div class="form" :style="{ left: menuPosition.x + 'px', top: menuPosition.y + 'px' }">
+      <div
+        class="form"
+        :style="{left: menuPosition.x + 'px', top: menuPosition.y + 'px'}"
+      >
         <div class="wrapper">
-          <div class="items" v-show="menuType == 'bookmarksAdd'">
-            <div class="item" @click="$store.commit('changeModalState')">Добавить</div>
+          <div
+            class="items"
+            v-show="menuType == 'bookmarksAdd'"
+          >
+            <router-link
+              class="item"
+              :to="{name: 'bookmarksModal'}"
+            >
+              Добавить
+            </router-link>
           </div>
-          <div class="items" v-show="menuType == 'bookmarksItem'">
-            <div class="item">Копировать URL</div>
-            <div class="item" @click="$store.commit('changeModalState')">Изменить</div>
-            <div class="item">Удалить</div>
+          <div
+            class="items"
+            v-show="menuType == 'bookmarksItem'"
+          >
+            <div
+              class="item"
+              v-clipboard="() => activeBookmark != null ? activeBookmark.url : ''"
+              @click="$store.commit('changeMenuState')"
+            >
+              Копировать URL
+            </div>
+            <router-link
+              class="item"
+              :to="{name: 'bookmarksModal'}"
+            >
+              Изменить
+            </router-link>
+            <div
+              class="item"
+              @click="$store.commit('deleteBookmark')"
+            >
+              Удалить
+            </div>
           </div>
         </div>
       </div>
 
-      <div class="overlay" @click="$store.commit('changeMenuState', { menuItemIndex: null})"></div>
+      <div class="overlay" @click="$store.commit('changeMenuState', {menuItemIndex: null})"></div>
     </div>
   </transition>
 </template>
 
 <script>
+import { mapGetters } from 'vuex';
+
 export default {
   name: 'bookmarksMenu',
-  data() {
-    return {
-      // showModal: false,
-    };
-  },
   computed: {
-    menuPosition() {
-      return {
-        x: this.$store.state.menu.positionX - 210,
-        y: this.$store.state.menu.positionY,
-      };
-    },
-    menuType() {
-      return this.$store.state.menu.type;
-    },
+    ...mapGetters(['activeBookmark', 'menuPosition', 'menuType']),
   },
 };
 </script>
 
-<!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
   .menu {
     left: 0;
@@ -50,7 +68,7 @@ export default {
     height: 100vh;
     width: 100vw;
   }
-  .form {
+  .menu .form {
     position: absolute;
     width: 230px;
     height: max-content;
@@ -62,7 +80,7 @@ export default {
     transition: all .3s ease;
     z-index: 2;
   }
-  .item {
+  .menu .item {
     display: flex;
     padding: 0 24px;
     height: 32px;
@@ -70,7 +88,7 @@ export default {
     font-size: 13px;
     cursor: pointer;
   }
-  .item:hover {
+  .menu .item:hover {
     background-color: #e9eaee;
   }
 </style>

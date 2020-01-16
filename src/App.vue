@@ -3,7 +3,11 @@
     <div class="bookmarks">
       <div class="header">
         <h1 class="title">Закладки</h1>
-        <button class="add" name="add" @click="$store.commit('changeMenuState', { type: 'bookmarksAdd', menuItemIndex: 0, element: $event.target.getBoundingClientRect()})">
+        <button
+          class="add"
+          name="add"
+          @click="$store.commit('changeMenuState', { type: 'bookmarksAdd', element: $event.target.getBoundingClientRect()}), $store.commit('changeActiveBookmark', null)"
+        >
           <svg viewBox="0 0 24 24" style="display: block; width: 100%; height: 100%;">
             <g>
               <path
@@ -13,23 +17,29 @@
         </button>
       </div>
 
+      <bookmarksListing></bookmarksListing>
+      <bookmarksMenu
+        v-show="menuState"
+      ></bookmarksMenu>
+
       <router-view/>
-      <router-view name="bookmarksMenu" v-show="menuState"/>
-      <router-view name="bookmarksModal" v-show="modalState"/>
     </div>
   </div>
 </template>
 
 <script>
+import { mapGetters } from 'vuex';
+import bookmarksListing from '@/components/bookmarks/bookmarksListing';
+import bookmarksMenu from '@/components/bookmarks/bookmarksMenu';
+
 export default {
   name: 'App',
   computed: {
-    menuState() {
-      return this.$store.state.menu.state;
-    },
-    modalState() {
-      return this.$store.state.modalState;
-    },
+    ...mapGetters(['menuState']),
+  },
+  components: {
+    bookmarksListing,
+    bookmarksMenu,
   },
 };
 </script>
@@ -51,13 +61,9 @@ export default {
     box-sizing: border-box;
   }
 
-  button {
-    outline: none;
-    cursor: pointer;
-  }
-
   a {
     text-decoration: none;
+    color: #000;
   }
 
   .header {
@@ -79,6 +85,8 @@ export default {
   }
 
   button {
+    outline: none;
+    cursor: pointer;
     padding: 0;
     border: none;
     display: inline-flex;
@@ -90,11 +98,13 @@ export default {
     stroke: none;
     width: 20px;
     height: 20px;
+    font-family: Roboto, 'Segoe UI', Tahoma, sans-serif;
   }
 
   button svg {
     background-color: #3367d6;
   }
+
   .overlay {
     position: fixed;
     left: 0;

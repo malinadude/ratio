@@ -2,57 +2,28 @@
   <div class="bookmarks__listing">
     <div class="wrapper">
       <div
-        class="item"
-        :class="{'active': menuItemState == 0}"
+        class="item empty"
+        v-if="bookmarksList.length <= 0"
       >
-        <div class="icon">
-          <img src="" alt="">
-        </div>
-        <div class="title">Доктор Хаус 1-8 сезон смотреть в Full HD 1080 / Blu-Ray все серии хорошем качестве бесплатно онлайн</div>
-        <a href="#" class="url" target="_blank">vk.com</a>
-        <button
-          class="change"
-          @click="$store.commit('changeMenuState', { type: 'bookmarksItem', menuItemIndex: 0, element: $event.target.getBoundingClientRect()})"
-        >
-          <svg viewBox="0 0 24 24" style="display: block; width: 100%; height: 100%;">
-            <g>
-              <path d="M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"></path>
-            </g>
-          </svg>
-        </button>
+        Закладок не обнаружено
       </div>
       <div
         class="item"
-        :class="{'active': menuItemState == 1}"
+        v-for="(bookmark, index) in bookmarksList"
       >
-        <div class="icon">
-          <img src="" alt="">
+        <div class="title">
+          {{ bookmark.title | truncate }}
         </div>
-        <div class="title">Вконтакте</div>
-        <a href="#" class="url" target="_blank">vk.com</a>
-        <button
-          class="change"
-          @click="$store.commit('changeMenuState', { type: 'bookmarksItem', menuItemIndex: 1, element: $event.target.getBoundingClientRect()})"
+        <a
+          class="url"
+          target="_blank"
+          :href="'//' + bookmark.url"
         >
-          <svg viewBox="0 0 24 24" style="display: block; width: 100%; height: 100%;">
-            <g>
-              <path d="M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"></path>
-            </g>
-          </svg>
-        </button>
-      </div>
-      <div
-        class="item"
-        :class="{'active': menuItemState == 2}"
-      >
-        <div class="icon">
-          <img src="" alt="">
-        </div>
-        <div class="title">Вконтакте</div>
-        <a href="#" class="url" target="_blank">vk.com</a>
+          {{ bookmark.url | truncate }}
+        </a>
         <button
           class="change"
-          @click="$store.commit('changeMenuState', { type: 'bookmarksItem', menuItemIndex: 2, element: $event.target.getBoundingClientRect()})"
+          @click="$store.commit('changeMenuState', {type: 'bookmarksItem', element: $event.target.getBoundingClientRect()}), $store.commit('changeActiveBookmark', index)"
         >
           <svg viewBox="0 0 24 24" style="display: block; width: 100%; height: 100%;">
             <g>
@@ -66,22 +37,21 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex';
+
 export default {
-  name: 'bookmarks',
-  data() {
-    return {
-      // msg: 'Welcome to Your Vue.js App',
-    };
-  },
+  name: 'bookmarksListing',
   computed: {
-    menuItemState() {
-      return this.$store.state.menu.menuItemIndex;
+    ...mapGetters(['activeBookmark', 'bookmarksList']),
+  },
+  filters: {
+    truncate(text, clamp) {
+      return text.slice(0, 120) + (text.length > 120 ? clamp || '...' : '');
     },
   },
 };
 </script>
 
-<!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
   .bookmarks__listing {
     display: flex;
@@ -93,13 +63,13 @@ export default {
     margin: 24px auto;
   }
 
-  .wrapper {
+  .bookmarks__listing .wrapper {
     display: flex;
     flex-direction: column;
     padding: 8px 0;
   }
 
-  .item {
+  .bookmarks__listing .item {
     padding-left: 20px;
     height: 40px;
     display: flex;
@@ -109,24 +79,35 @@ export default {
     position: relative;
     cursor: default;
     font-size: 13px;
+    padding-right: 50px;
   }
 
-  .title {
+  .bookmarks__listing .item.empty {
+    justify-content: center;
+  }
+
+  .bookmarks__listing .item .title {
     color: #202124;
     margin-left: 20px;
   }
-  .url {
+  .bookmarks__listing .item .url {
     margin-left: 20px;
     color: rgba(0, 0, 0, 0.54);
   }
-  button svg {
+  .bookmarks__listing .item button svg {
     background-color: #fff;
   }
-  button.change {
+  .bookmarks__listing .item button.change {
     fill: #5f6368;
     position: absolute;
     right: 16px;
     top: 50%;
     transform: translateY(-50%);
+  }
+
+  @media (max-width: 1060px) {
+    .bookmarks__listing {
+      max-width: 95%;
+    }
   }
 </style>
