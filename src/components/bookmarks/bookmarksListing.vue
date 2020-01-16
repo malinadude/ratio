@@ -10,6 +10,7 @@
       <div
         class="item"
         v-for="(bookmark, index) in bookmarksList"
+        :key="index"
       >
         <div class="title">
           {{ bookmark.title | truncate }}

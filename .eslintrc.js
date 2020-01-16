@@ -46,6 +46,7 @@ module.exports = {
     }],
     // allow debugger during development
     'no-debugger': process.env.NODE_ENV === 'production' ? 'error' : 'off',
-    'max-len': 0
+    'max-len': 0,
+    "linebreak-style": 0
   }
 }
